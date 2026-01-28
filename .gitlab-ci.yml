@@ -1,0 +1,22 @@
+stages:
+  - build-push
+
+variables:
+  # ปิดการตรวจสอบ Certificate เพื่อให้ใช้ IP ได้
+  DOCKER_TLS_CERTDIR: ""
+
+build-frontend:
+  stage: build-push
+  image: docker:latest
+  services:
+    - name: docker:dind
+      # สั่งให้ Docker ยอมรับ IP เครื่องเรา
+      command: ["--insecure-registry=192.168.100.106:5000"]
+  
+  script:
+    - echo "Start building frontend..."
+    # สร้าง Image
+    - docker build -t 192.168.100.106:5000/frontend:latest ./frontend
+    # ส่งขึ้น Server
+    - docker push 192.168.100.106:5000/frontend:latest
+    - echo "Done!"
