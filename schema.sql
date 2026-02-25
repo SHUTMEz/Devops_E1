@@ -191,7 +191,8 @@ CREATE TABLE evaluation_results (
   score DECIMAL(5,2) NULL,
   value_yes_no TINYINT(1) NULL,
   notes TEXT NULL,
-  status ENUM('draft','submitted') NOT NULL DEFAULT 'draft',
+  status ENUM('draft','submitted','locked') NOT NULL DEFAULT 'draft',
+  submitted_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_res_period  FOREIGN KEY (period_id)    REFERENCES evaluation_periods(id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -209,6 +210,7 @@ CREATE TABLE attachments (
   evaluatee_id BIGINT UNSIGNED NOT NULL,
   indicator_id BIGINT UNSIGNED NOT NULL,
   evidence_type_id INT NOT NULL,
+  result_id BIGINT UNSIGNED NULL,
   file_name VARCHAR(255) NOT NULL,
   mime_type VARCHAR(100) NOT NULL,
   size_bytes INT UNSIGNED NOT NULL,
@@ -218,6 +220,7 @@ CREATE TABLE attachments (
   CONSTRAINT fk_att_evale   FOREIGN KEY (evaluatee_id)    REFERENCES users(id)              ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT fk_att_ind     FOREIGN KEY (indicator_id)    REFERENCES indicators(id)         ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT fk_att_evtype  FOREIGN KEY (evidence_type_id) REFERENCES evidence_types(id)    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_att_result  FOREIGN KEY (result_id) REFERENCES evaluation_results(id)       ON DELETE SET NULL ON UPDATE CASCADE,
   KEY idx_attach_evale (evaluatee_id, period_id)
 ) ENGINE=InnoDB;
 

@@ -1,82 +1,80 @@
-// composables/useMenu.js
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 export const useMenu = (role) => {
   const menu = computed(() => {
-    // ------------------------------------------------
-    // 1. เมนูสำหรับ ADMIN (เห็นเยอะสุด)
-    // ------------------------------------------------
     if (role.value === 'admin') {
       return [
         {
-          label: 'ผู้ดูแลระบบ (Administrator)',
+          label: 'Administration',
           items: [
-            // { 
-            //   label: 'จัดการผู้ใช้งาน (Users)', 
-            //   icon: 'mdi-database', 
-            //   to: '/' // หรือ path ที่เป็น list_admin ของคุณ
-            // },
-            { 
-              label: 'จัดการรอบการประเมิน', 
-              icon: 'mdi-calendar-clock', 
-              to: '/EvaluationPeriods' // หรือ path ของ EvaluationPeriods
-            },
-            { 
-              label: 'จับคู่การประเมิน', 
-              icon: 'mdi-link-variant', 
-              to: '/AssignmentManager' // หรือ path ของ AssignmentManager
-            },
-            { 
-              label: 'รายชื่อใน ระบบ', 
-              icon: 'mdi-account-group', 
-              to: '/list_admin' // หรือ path ของ listfromdatabase2
-            },
-            { 
-              label: 'หมวดวิชา', 
-              icon: 'mdi-shape', 
-              to: '/listfromdatabase2' // หรือ path ของ listfromdatabase2
-            }
-          ]
-        }
-      ]
+            { label: 'Home', icon: 'mdi-home', to: '/home' },
+            { label: 'Users', icon: 'mdi-account-group', to: '/admin/users' },
+            { label: 'Topics', icon: 'mdi-format-list-bulleted-square', to: '/admin/topics' },
+            { label: 'Indicators', icon: 'mdi-tune-variant', to: '/admin/indicators' },
+            { label: 'Periods', icon: 'mdi-calendar-clock', to: '/admin/periods' },
+            { label: 'Assignments', icon: 'mdi-account-switch', to: '/admin/assignments' },
+            { label: 'Results', icon: 'mdi-chart-bar', to: '/admin/results' },
+          ],
+        },
+        {
+          label: 'Reports',
+          items: [
+            { label: 'Normalized /60', icon: 'mdi-table-large', to: '/reports/normalized' },
+            { label: 'Progress', icon: 'mdi-chart-donut', to: '/reports/progress' },
+          ],
+        },
+      ];
     }
 
-    // ------------------------------------------------
-    // 2. เมนูสำหรับ EVALUATEE (ผู้รับการประเมิน)
-    // ------------------------------------------------
-    else if (role.value === 'evaluatee') {
+    if (role.value === 'evaluator') {
       return [
         {
-          label: 'การประเมินของฉัน',
+          label: 'Evaluator',
           items: [
-            { 
-              label: 'ส่งหลักฐาน (Submission)', 
-              icon: 'mdi-file-document-arrow-right', 
-              to: '/EvidenceSubmission' // หรือ path ของ EvidenceSubmission
-            }
-          ]
-        }
-      ]
+            { label: 'Home', icon: 'mdi-home', to: '/home' },
+            { label: 'My Assignments', icon: 'mdi-clipboard-check', to: '/evaluator/assignments' },
+            { label: 'History', icon: 'mdi-history', to: '/evaluator/history' },
+          ],
+        },
+        {
+          label: 'Reports',
+          items: [
+            { label: 'Normalized /60', icon: 'mdi-table-large', to: '/reports/normalized' },
+            { label: 'Progress', icon: 'mdi-chart-donut', to: '/reports/progress' },
+          ],
+        },
+      ];
     }
 
-    // ------------------------------------------------
-    // 3. กรณีอื่นๆ (User ทั่วไป หรือยังไม่ Login)
-    // ------------------------------------------------
-    else if (role.value === 'evaluator') {
+    if (role.value === 'evaluatee') {
       return [
         {
-          label: 'การประเมินของฉัน',
+          label: 'My Space',
           items: [
-            { 
-              label: 'ประเมินบุคลากร', 
-              icon: 'mdi-badge-account', 
-              to: '/evaluation_index' // หรือ path ของ EvidenceSubmission
-            }
-          ]
-        }
-      ]
+            { label: 'Home', icon: 'mdi-home', to: '/home' },
+            { label: 'My Evaluation', icon: 'mdi-account-search', to: '/me/evaluation' },
+            { label: 'Upload Evidence', icon: 'mdi-file-upload', to: '/me/evidence' },
+            { label: 'Personal Report', icon: 'mdi-file-document', to: '/me/report' },
+          ],
+        },
+        {
+          label: 'Reports',
+          items: [
+            { label: 'Normalized /60', icon: 'mdi-table-large', to: '/reports/normalized' },
+          ],
+        },
+      ];
     }
-  })
 
-  return { menu }
-}
+    return [
+      {
+        label: 'Guest',
+        items: [
+          { label: 'Login', icon: 'mdi-login', to: '/login' },
+        ],
+      },
+    ];
+  });
+
+  return { menu };
+};
