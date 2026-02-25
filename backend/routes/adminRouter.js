@@ -39,5 +39,22 @@ router.delete('/users/:id', adminController.deleteUser);
 router.get('/departments', adminController.getAllDepartments)
 router.get('/org-groups', adminController.getAllOrgGroups)
 
+// --- 4. Topics CRUD ---
+router.get('/topics', adminController.getTopics);
+router.post('/topics', adminController.createTopic);
+router.put('/topics/:id', adminController.updateTopic);
+router.delete('/topics/:id', adminController.deleteTopic);
+
+// --- 5. Indicators CRUD ---
+router.get('/indicators', adminController.getIndicators);
+router.post('/indicators', adminController.createIndicator);
+router.put('/indicators/:id', adminController.updateIndicator);
+router.delete('/indicators/:id', adminController.deleteIndicator);
+
+// --- 6. Results CRUD ---
+router.get('/results', adminController.getResults);
+router.post('/results', adminController.createResult);
+router.put('/results/:id', adminController.updateResult);
+router.delete('/results/:id', adminController.deleteResult);
 
 module.exports = router;

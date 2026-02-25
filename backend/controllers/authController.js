@@ -17,7 +17,7 @@ exports.login = async (req, res) => {
         }
         const token = jwt.sign(
             {id: user.id,name_th: user.name_th, email: user.email,role: user.role, dept_id: user.department_id ,org_id: user.org_group_id,},
-            process.env.JWT_SECRET || "Testing123" ,
+            process.env.JWT_SECRET || "testing123" ,
             {expiresIn:process.env.JWT_EXPIRES_IN || "1h"}
         )
         console.log(token)
@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
             email: user.email,
             name_th: user.name_th,
             role: user.role,
-            dept_id: user.dept_id,
+            dept_id: user.department_id,
         },
     })
     }   catch(error){
@@ -38,3 +38,38 @@ exports.login = async (req, res) => {
         })
     }
 }
+
+exports.register = async (req, res) => {
+    const { email, name, name_th, password, department_id, org_group_id } = req.body;
+    const displayName = name || name_th;
+    if (!email || !displayName || !password) {
+        return res.status(400).json({ message: 'email, name/password are required' });
+    }
+
+    try {
+        const exists = await db('users').where({ email }).first();
+        if (exists) {
+            return res.status(409).json({ message: 'Email already exists' });
+        }
+
+        const password_hash = await bcrypt.hash(password, 10);
+        const [id] = await db('users').insert({
+            email,
+            password_hash,
+            name_th: displayName,
+            role: 'evaluatee',
+            department_id: department_id || null,
+            status: 'active',
+            org_group_id: org_group_id || null,
+        });
+
+        const user = await db('users')
+            .select('id', 'email', 'name_th', 'role', 'department_id')
+            .where({ id })
+            .first();
+
+        return res.status(201).json({ message: 'Register successful', user });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};

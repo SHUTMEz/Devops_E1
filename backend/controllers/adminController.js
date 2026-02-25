@@ -350,3 +350,156 @@ exports.deleteUser = async (req, res) => {
 //         .select('id', 'name_th', 'dept_id');
 //     res.json(users);
 // };
+// ==========================================
+// ส่วนที่ 4: Topics CRUD
+// ==========================================
+exports.getTopics = async (req, res) => {
+  try {
+    const rows = await db('evaluation_topics').orderBy('id', 'desc');
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.createTopic = async (req, res) => {
+  try {
+    const { code, title_th, weight = 1, active = 1 } = req.body;
+    const [id] = await db('evaluation_topics').insert({ code, title_th, weight, active });
+    const row = await db('evaluation_topics').where({ id }).first();
+    res.status(201).json(row);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.updateTopic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code, title_th, weight, active } = req.body;
+    await db('evaluation_topics').where({ id }).update({ code, title_th, weight, active });
+    const row = await db('evaluation_topics').where({ id }).first();
+    res.json(row);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.deleteTopic = async (req, res) => {
+  try {
+    await db('evaluation_topics').where({ id: req.params.id }).del();
+    res.json({ message: 'Topic deleted' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+// ==========================================
+// ส่วนที่ 5: Indicators CRUD
+// ==========================================
+exports.getIndicators = async (req, res) => {
+  try {
+    const rows = await db('indicators as i')
+      .leftJoin('evaluation_topics as t', 't.id', 'i.topic_id')
+      .select('i.*', 't.title_th as topic_title')
+      .orderBy('i.id', 'desc');
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.createIndicator = async (req, res) => {
+  try {
+    const body = {
+      topic_id: req.body.topic_id,
+      code: req.body.code,
+      name_th: req.body.name_th,
+      description: req.body.description || null,
+      type: req.body.type || 'score_1_4',
+      weight: req.body.weight || 1,
+      min_score: req.body.min_score || 1,
+      max_score: req.body.max_score || 4,
+      active: req.body.active ?? 1,
+    };
+    const [id] = await db('indicators').insert(body);
+    const row = await db('indicators').where({ id }).first();
+    res.status(201).json(row);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.updateIndicator = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const body = {
+      topic_id: req.body.topic_id,
+      code: req.body.code,
+      name_th: req.body.name_th,
+      description: req.body.description || null,
+      type: req.body.type || 'score_1_4',
+      weight: req.body.weight || 1,
+      min_score: req.body.min_score || 1,
+      max_score: req.body.max_score || 4,
+      active: req.body.active ?? 1,
+    };
+    await db('indicators').where({ id }).update(body);
+    const row = await db('indicators').where({ id }).first();
+    res.json(row);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.deleteIndicator = async (req, res) => {
+  try {
+    await db('indicators').where({ id: req.params.id }).del();
+    res.json({ message: 'Indicator deleted' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+// ==========================================
+// ส่วนที่ 6: Results CRUD
+// ==========================================
+exports.getResults = async (req, res) => {
+  try {
+    const rows = await db('evaluation_results as r')
+      .leftJoin('users as evale', 'evale.id', 'r.evaluatee_id')
+      .leftJoin('users as evalr', 'evalr.id', 'r.evaluator_id')
+      .leftJoin('indicators as i', 'i.id', 'r.indicator_id')
+      .select('r.*', 'evale.name_th as evaluatee_name', 'evalr.name_th as evaluator_name', 'i.name_th as indicator_name')
+      .orderBy('r.id', 'desc');
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.createResult = async (req, res) => {
+  try {
+    const body = {
+      period_id: req.body.period_id,
+      evaluatee_id: req.body.evaluatee_id,
+      evaluator_id: req.body.evaluator_id,
+      topic_id: req.body.topic_id,
+      indicator_id: req.body.indicator_id,
+      score: req.body.score ?? null,
+      value_yes_no: req.body.value_yes_no ?? null,
+      notes: req.body.notes || null,
+      status: req.body.status || 'draft',
+      submitted_at: req.body.submitted_at || null,
+    };
+    const [id] = await db('evaluation_results').insert(body);
+    const row = await db('evaluation_results').where({ id }).first();
+    res.status(201).json(row);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.updateResult = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const body = {
+      score: req.body.score ?? null,
+      value_yes_no: req.body.value_yes_no ?? null,
+      notes: req.body.notes || null,
+      status: req.body.status || 'draft',
+      submitted_at: req.body.submitted_at || null,
+      updated_at: new Date(),
+    };
+    await db('evaluation_results').where({ id }).update(body);
+    const row = await db('evaluation_results').where({ id }).first();
+    res.json(row);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+
+exports.deleteResult = async (req, res) => {
+  try {
+    await db('evaluation_results').where({ id: req.params.id }).del();
+    res.json({ message: 'Result deleted' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};

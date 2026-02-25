@@ -1,0 +1,89 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Personnel Evaluation API",
+    "version": "1.1.0"
+  },
+  "paths": {
+    "/system/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register evaluatee",
+        "responses": {
+          "201": { "description": "Created" },
+          "409": { "description": "Email already exists" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/task1/evaluation-results": {
+      "get": {
+        "summary": "IDOR guarded results endpoint",
+        "responses": {
+          "200": { "description": "OK" },
+          "403": { "description": "forbidden" }
+        }
+      }
+    },
+    "/api/task1/evaluationresults": {
+      "get": {
+        "summary": "IDOR guarded results endpoint (legacy alias)",
+        "responses": {
+          "200": { "description": "OK" },
+          "403": { "description": "forbidden" }
+        }
+      }
+    },
+    "/api/task2/results/{id}/submit": {
+      "patch": {
+        "summary": "Submit evaluation result with evidence rule",
+        "responses": {
+          "200": { "description": "Submitted" },
+          "400": { "description": "EVIDENCE_REQUIRED" },
+          "409": { "description": "RESULT_LOCKED" }
+        }
+      }
+    },
+    "/api/task3/reports/normalized": {
+      "get": {
+        "summary": "Normalized /60 report",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/task4/assignments": {
+      "post": {
+        "summary": "Unique assignment guard",
+        "responses": {
+          "201": { "description": "Created" },
+          "409": { "description": "DUPLICATE_ASSIGNMENT" }
+        }
+      }
+    },
+    "/api/task5/reports/progress": {
+      "get": {
+        "summary": "Progress by department",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/upload/file": {
+      "post": {
+        "summary": "Upload evidence",
+        "responses": {
+          "200": { "description": "Uploaded" },
+          "413": { "description": "PAYLOAD_TOO_LARGE" },
+          "415": { "description": "UNSUPPORTED_MEDIA_TYPE" }
+        }
+      }
+    }
+  }
+}
